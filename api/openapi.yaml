@@ -1,0 +1,373 @@
+openapi: 3.0.1
+info:
+  title: KomMonitor Geocoder Proxy
+  description: "KomMonitor Geocoder Proxy that defines a common query and response\
+    \ interface for arbitrary geocoding services like nominatim, photon (datasource\
+    \ is OSM)"
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: christian.danowski-buhren@hs-bochum.de
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.0.1
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+- url: http://localhost:8090/
+- url: https://localhost:8090/
+tags:
+- name: geocoder
+  description: geocode locations or reverse geocode coordinates
+paths:
+  /geocoder/geocode/query-string:
+    get:
+      tags:
+      - geocoder
+      summary: proxies search request to underlying geocoding service in order to
+        find coordinates for entered location
+      description: proxies search request to underlying geocoding service in order
+        to find coordinates for entered location
+      operationId: geocodeByQueryString
+      parameters:
+      - name: q
+        in: query
+        description: "the query string (e.g. 'Müllerstr. 3, Essen' or '3, Müllerstraß\
+          e, 45147')"
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: "3, Müllerstraße, 45147"
+      - name: lon
+        in: query
+        description: optional longitude to prioritize results
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: "7.1234"
+      - name: lat
+        in: query
+        description: optional latitude to prioritize results
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: "51.4321"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeocodingOutputType'
+        "401":
+          description: Unauthorized
+          headers:
+            WWW_Authenticate:
+              style: simple
+              explode: false
+              schema:
+                type: string
+          content: {}
+        "405":
+          description: Invalid input
+          content: {}
+        "500":
+          description: Internal Server Error
+          content: {}
+      x-swagger-router-controller: Geocoder
+  /geocoder/geocode/query-structured:
+    get:
+      tags:
+      - geocoder
+      summary: "proxies search request to underlying geocoding service in order to\
+        \ find coordinates for entered structured data. No parameter is required.\
+        \ Instead any combination of structrured query elements may respond with 0\
+        \ ... n result records in the form of a GeoJSON FeatureCollection, where each\
+        \ feature has more or less details with regard to address details"
+      description: "proxies search request to underlying geocoding service in order\
+        \ to find coordinates for entered structured data. No parameter is required.\
+        \ Instead any combination of structrured query elements may respond with 0\
+        \ ... n result records in the form of a GeoJSON FeatureCollection, where each\
+        \ feature has more or less details with regard to address details"
+      operationId: geocodeByStructuredQuery
+      parameters:
+      - name: country
+        in: query
+        description: optional country name
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: Deutschland
+      - name: state
+        in: query
+        description: optional state name
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: Nordrhein-Westfalen
+      - name: city
+        in: query
+        description: optional city name
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: Essen
+      - name: district
+        in: query
+        description: optional district name
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: Holsterhausen
+      - name: postcode
+        in: query
+        description: optional postcode name
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: "45147"
+      - name: street
+        in: query
+        description: required street name
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: Müllerstraße
+      - name: housenumber
+        in: query
+        description: optional housenumber name
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 13c
+      - name: lon
+        in: query
+        description: optional longitude to prioritize results
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: "7.1234"
+      - name: lat
+        in: query
+        description: optional latitude to prioritize results
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: "51.4321"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeocodingOutputType'
+        "401":
+          description: Unauthorized
+          headers:
+            WWW_Authenticate:
+              style: simple
+              explode: false
+              schema:
+                type: string
+          content: {}
+        "405":
+          description: Invalid input
+          content: {}
+        "500":
+          description: Internal Server Error
+          content: {}
+      x-swagger-router-controller: Geocoder
+components:
+  schemas:
+    GeocodingOutputType:
+      type: object
+      properties:
+        type:
+          type: string
+          default: FeatureCollection
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/GeocodingFeatureType'
+      description: output generated by a geocoding request. 0 or more records in the
+        form of a GeoJSON FeatureCollection (if emtpy then the returned FeatureCollection
+        has an empty features array)
+      example:
+        features:
+        - geometry:
+            coordinates:
+            - 7.1234
+            - 51.4321
+            type: Point
+          properties:
+            country: Deutschland
+            city: Essen
+            housenumber: 13c
+            street: Müllerstraße
+            district: Holsterhausen
+            postcode: "45147"
+            state: Nordrhein-Westfalen
+            category: building
+            type: apartments
+            display_name: "3, Müllerstraße, Holsterhausen, Essen, Nordrhein-Westfalen,\
+              \ 45147, Deutschland"
+        - geometry:
+            coordinates:
+            - 7.1234
+            - 51.4321
+            type: Point
+          properties:
+            country: Deutschland
+            city: Essen
+            housenumber: 13c
+            street: Müllerstraße
+            district: Holsterhausen
+            postcode: "45147"
+            state: Nordrhein-Westfalen
+            category: building
+            type: apartments
+            display_name: "3, Müllerstraße, Holsterhausen, Essen, Nordrhein-Westfalen,\
+              \ 45147, Deutschland"
+        type: FeatureCollection
+    GeocodingFeatureType:
+      type: object
+      properties:
+        geometry:
+          $ref: '#/components/schemas/GeocodingGeometryType'
+        properties:
+          $ref: '#/components/schemas/GeocodingPropertiesType'
+      example:
+        geometry:
+          coordinates:
+          - 7.1234
+          - 51.4321
+          type: Point
+        properties:
+          country: Deutschland
+          city: Essen
+          housenumber: 13c
+          street: Müllerstraße
+          district: Holsterhausen
+          postcode: "45147"
+          state: Nordrhein-Westfalen
+          category: building
+          type: apartments
+          display_name: "3, Müllerstraße, Holsterhausen, Essen, Nordrhein-Westfalen,\
+            \ 45147, Deutschland"
+    GeocodingGeometryType:
+      type: object
+      properties:
+        type:
+          type: string
+          description: the geometry type of the feature - here in geocoding context
+            it is always point
+          default: Point
+        coordinates:
+          maximum: 2
+          minimum: 2
+          type: array
+          description: "coordinate array of feature point geometry using longitude,\
+            \ latitude"
+          example:
+          - 7.1234
+          - 51.4321
+          items:
+            type: number
+            format: float
+      example:
+        coordinates:
+        - 7.1234
+        - 51.4321
+        type: Point
+    GeocodingPropertiesType:
+      type: object
+      properties:
+        category:
+          type: string
+          description: category of response (osm_key)
+          example: building
+        type:
+          type: string
+          description: type within category (osm_value)
+          example: apartments
+        display_name:
+          type: string
+          description: a descriptive string combining several address details within
+            one string (i.e. for display popup purposes)
+          example: "3, Müllerstraße, Holsterhausen, Essen, Nordrhein-Westfalen, 45147,\
+            \ Deutschland"
+        country:
+          type: string
+          description: name of the country
+          example: Deutschland
+        state:
+          type: string
+          description: name of the state
+          example: Nordrhein-Westfalen
+        postcode:
+          type: string
+          description: postal code
+          example: "45147"
+        city:
+          type: string
+          description: name of the city
+          example: Essen
+        district:
+          type: string
+          description: name of the city district
+          example: Holsterhausen
+        street:
+          type: string
+          description: name of the street
+          example: Müllerstraße
+        housenumber:
+          type: string
+          description: house number (including any suffix) if available
+          example: 13c
+      example:
+        country: Deutschland
+        city: Essen
+        housenumber: 13c
+        street: Müllerstraße
+        district: Holsterhausen
+        postcode: "45147"
+        state: Nordrhein-Westfalen
+        category: building
+        type: apartments
+        display_name: "3, Müllerstraße, Holsterhausen, Essen, Nordrhein-Westfalen,\
+          \ 45147, Deutschland"
+  responses:
+    UnauthorizedError:
+      description: API key is missing or invalid
+      headers:
+        WWW_Authenticate:
+          style: simple
+          explode: false
+          schema:
+            type: string
+      content: {}
