@@ -18,13 +18,15 @@ servers:
 - url: http://localhost:8090/
 - url: https://localhost:8090/
 tags:
-- name: geocoder
+- name: geocode
   description: geocode locations or reverse geocode coordinates
+- name: reverse-geocode
+  description: "find address details for a given longitude, latitude point"
 paths:
   /geocoder/geocode/query-string:
     get:
       tags:
-      - geocoder
+      - geocode
       summary: proxies search request to underlying geocoding service in order to
         find coordinates for entered location
       description: proxies search request to underlying geocoding service in order
@@ -81,11 +83,11 @@ paths:
         "500":
           description: Internal Server Error
           content: {}
-      x-swagger-router-controller: Geocoder
+      x-swagger-router-controller: Geocode
   /geocoder/geocode/query-structured:
     get:
       tags:
-      - geocoder
+      - geocode
       summary: "proxies search request to underlying geocoding service in order to\
         \ find coordinates for entered structured data. No parameter is required.\
         \ Instead any combination of structrured query elements may respond with 0\
@@ -201,7 +203,58 @@ paths:
         "500":
           description: Internal Server Error
           content: {}
-      x-swagger-router-controller: Geocoder
+      x-swagger-router-controller: Geocode
+  /geocoder/reverse:
+    get:
+      tags:
+      - reverse-geocode
+      summary: "proxies reverse-geocode request to underlying geocoding service in\
+        \ order to find address details for given longitude, latitude coordinates"
+      description: "proxies reverse-geocode request to underlying geocoding service\
+        \ in order to find address details for given longitude, latitude coordinates"
+      operationId: reverseGeocode
+      parameters:
+      - name: lon
+        in: query
+        description: required longitude
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: "7.1234"
+      - name: lat
+        in: query
+        description: required latitude
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: "51.4321"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeocodingOutputType'
+        "401":
+          description: Unauthorized
+          headers:
+            WWW_Authenticate:
+              style: simple
+              explode: false
+              schema:
+                type: string
+          content: {}
+        "405":
+          description: Invalid input
+          content: {}
+        "500":
+          description: Internal Server Error
+          content: {}
+      x-swagger-router-controller: ReverseGeocode
 components:
   schemas:
     GeocodingOutputType:
