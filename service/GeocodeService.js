@@ -1,5 +1,7 @@
 'use strict';
 
+let GeocoderHelper = require('./GeocoderServiceHelper');
+
 
 /**
  * proxies search request to underlying geocoding service in order to find coordinates for entered location
@@ -11,53 +13,18 @@
  * returns GeocodingOutputType
  **/
 exports.geocodeByQueryString = function(q,lon,lat) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "features" : [ {
-    "geometry" : {
-      "coordinates" : [ 7.1234, 51.4321 ],
-      "type" : "Point"
-    },
-    "properties" : {
-      "country" : "Deutschland",
-      "city" : "Essen",
-      "housenumber" : "13c",
-      "street" : "Müllerstraße",
-      "district" : "Holsterhausen",
-      "postcode" : "45147",
-      "state" : "Nordrhein-Westfalen",
-      "category" : "building",
-      "type" : "apartments",
-      "display_name" : "3, Müllerstraße, Holsterhausen, Essen, Nordrhein-Westfalen, 45147, Deutschland"
-    }
-  }, {
-    "geometry" : {
-      "coordinates" : [ 7.1234, 51.4321 ],
-      "type" : "Point"
-    },
-    "properties" : {
-      "country" : "Deutschland",
-      "city" : "Essen",
-      "housenumber" : "13c",
-      "street" : "Müllerstraße",
-      "district" : "Holsterhausen",
-      "postcode" : "45147",
-      "state" : "Nordrhein-Westfalen",
-      "category" : "building",
-      "type" : "apartments",
-      "display_name" : "3, Müllerstraße, Holsterhausen, Essen, Nordrhein-Westfalen, 45147, Deutschland"
-    }
-  } ],
-  "type" : "FeatureCollection"
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
+  return new Promise(async function(resolve, reject) {
+
+    try {
+      let geocodingOutput = await GeocoderHelper.performGeocoding_queryString(q, lon, lat);
+
+      resolve(geocodingOutput); 
+    } catch (error) {
+      console.error(error);
+      reject(error);
+    }    
   });
-}
+};
 
 
 /**
@@ -76,51 +43,16 @@ exports.geocodeByQueryString = function(q,lon,lat) {
  * returns GeocodingOutputType
  **/
 exports.geocodeByStructuredQuery = function(country,state,city,district,postcode,street,housenumber,lon,lat) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "features" : [ {
-    "geometry" : {
-      "coordinates" : [ 7.1234, 51.4321 ],
-      "type" : "Point"
-    },
-    "properties" : {
-      "country" : "Deutschland",
-      "city" : "Essen",
-      "housenumber" : "13c",
-      "street" : "Müllerstraße",
-      "district" : "Holsterhausen",
-      "postcode" : "45147",
-      "state" : "Nordrhein-Westfalen",
-      "category" : "building",
-      "type" : "apartments",
-      "display_name" : "3, Müllerstraße, Holsterhausen, Essen, Nordrhein-Westfalen, 45147, Deutschland"
-    }
-  }, {
-    "geometry" : {
-      "coordinates" : [ 7.1234, 51.4321 ],
-      "type" : "Point"
-    },
-    "properties" : {
-      "country" : "Deutschland",
-      "city" : "Essen",
-      "housenumber" : "13c",
-      "street" : "Müllerstraße",
-      "district" : "Holsterhausen",
-      "postcode" : "45147",
-      "state" : "Nordrhein-Westfalen",
-      "category" : "building",
-      "type" : "apartments",
-      "display_name" : "3, Müllerstraße, Holsterhausen, Essen, Nordrhein-Westfalen, 45147, Deutschland"
-    }
-  } ],
-  "type" : "FeatureCollection"
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
+  return new Promise(async function(resolve, reject) {
+
+    try {
+      let geocodingOutput = await GeocoderHelper.performGeocoding_structuredQuery(country,state,city,district,postcode,street,housenumber,lon,lat);
+
+      resolve(geocodingOutput); 
+    } catch (error) {
+      console.error(error);
+      reject(error);
+    }    
   });
-}
+};
 

@@ -9,6 +9,6 @@ module.exports.reverseGeocode = function reverseGeocode (req, res, next, lon, la
       utils.writeJson(res, response);
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, response, 500);
     });
 };

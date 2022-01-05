@@ -9,7 +9,7 @@ module.exports.geocodeByQueryString = function geocodeByQueryString (req, res, n
       utils.writeJson(res, response);
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, response, 500);
     });
 };
 
@@ -19,6 +19,6 @@ module.exports.geocodeByStructuredQuery = function geocodeByStructuredQuery (req
       utils.writeJson(res, response);
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, response, 500);
     });
 };
