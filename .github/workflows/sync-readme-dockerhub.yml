@@ -37,4 +37,4 @@ jobs:
           pass: ${{ secrets.DOCKERHUB_DANO_SECRET }}
           slug: kommonitor/geocoder-proxy
           readme: ./README_DOCKERHUB.md
-          description: true
+          description: false
