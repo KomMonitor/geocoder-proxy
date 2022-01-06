@@ -1,7 +1,7 @@
 {
   "name": "kommonitor-geocoder-proxy",
   "version": "0.1.0",
-  "description": "KomMonitor Geocoder Proxy that defines a common query and response interface for arbitrary geocoding services like nominatim, photon (datasource is OSM)",
+  "description": "KomMonitor Geocoder Proxy defining a common query and response interface for geocoding services (nominatim, photon  with datasource OSM)",
   "main": "index.js",
   "scripts": {
     "prestart": "npm install",
