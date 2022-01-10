@@ -201,11 +201,11 @@ exports.mapToKomMonitorModel = function (data) {
     }
     */
 
-    let geocoderOutput = new KommonitorGeocoderApi.GeocodingOutputType();
+    let geocoderOutput = {};
     geocoderOutput.features = [];
 
     for (const inputFeature of data.features) {
-        let outputFeature = new KommonitorGeocoderApi.GeocodingFeatureType();
+        let outputFeature = {};
         outputFeature.geometry = inputFeature.geometry;
         outputFeature.properties = exports.mapFeatureToKomMonitorModel(inputFeature.properties);
     
@@ -217,7 +217,7 @@ exports.mapToKomMonitorModel = function (data) {
 };
 
 exports.mapFeatureToKomMonitorModel = function (inputFeatureProperties) {
-    let outputProperties = new KommonitorGeocoderApi.GeocodingPropertiesType();
+    let outputProperties = {};
     outputProperties.category = inputFeatureProperties["category"];
     outputProperties.type = inputFeatureProperties["type"];
     outputProperties.country = inputFeatureProperties.address["country"];
