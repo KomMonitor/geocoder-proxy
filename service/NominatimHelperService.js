@@ -1,6 +1,6 @@
 'use strict';
 
-let KommonitorGeocoderApi = require('kommonitorGeocoderApi');
+let KommonitorGeocoderApi = require('../lib/kommonitorGeocoderApi');
 
 // axios is used to execute HTTP requests in a Promise-based manner
 const axios = require("axios");
