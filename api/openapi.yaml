@@ -16,6 +16,7 @@ externalDocs:
   url: http://swagger.io
 servers:
 - url: https://geocoder.fbg-hsbo.de/
+- url: http://localhost:8090/
 tags:
 - name: geocode
   description: geocode locations or reverse geocode coordinates
@@ -67,6 +68,71 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GeocodingOutputType'
+        "401":
+          description: Unauthorized
+          headers:
+            WWW_Authenticate:
+              style: simple
+              explode: false
+              schema:
+                type: string
+          content: {}
+        "405":
+          description: Invalid input
+          content: {}
+        "500":
+          description: Internal Server Error
+          content: {}
+      x-swagger-router-controller: Geocode
+  /geocoder/geocode/query-string/batch:
+    post:
+      tags:
+      - geocode
+      summary: proxies search batch request to underlying geocoding service in order
+        to find coordinates for each entered location
+      description: proxies search batch request to underlying geocoding service in
+        order to find coordinates for each entered location
+      operationId: geocodeByQueryStringBatch
+      parameters:
+      - name: lon
+        in: query
+        description: optional longitude to prioritize results
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: "7.1234"
+      - name: lat
+        in: query
+        description: optional latitude to prioritize results
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: "51.4321"
+      requestBody:
+        description: "list of query string (e.g. 'Müllerstr. 3, Essen' or '3, Müllerstraß\
+          e, 45147')"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                example: "3, Müllerstraße, 45147"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GeocodingOutputType'
+                x-content-type: application/json
         "401":
           description: Unauthorized
           headers:
@@ -203,6 +269,75 @@ paths:
           description: Internal Server Error
           content: {}
       x-swagger-router-controller: Geocode
+  /geocoder/geocode/query-structured/batch:
+    post:
+      tags:
+      - geocode
+      summary: "proxies search batch request to underlying geocoding service in order\
+        \ to find coordinates for entered structured data. No parameter is required.\
+        \ Instead any combination of structrured query elements may respond with 0\
+        \ ... n result records in the form of a GeoJSON FeatureCollection, where each\
+        \ feature has more or less details with regard to address details"
+      description: "proxies search batch request to underlying geocoding service in\
+        \ order to find coordinates for entered structured data. No parameter is required.\
+        \ Instead any combination of structrured query elements may respond with 0\
+        \ ... n result records in the form of a GeoJSON FeatureCollection, where each\
+        \ feature has more or less details with regard to address details"
+      operationId: geocodeByStructuredQueryBatch
+      parameters:
+      - name: lon
+        in: query
+        description: optional longitude to prioritize results
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: "7.1234"
+      - name: lat
+        in: query
+        description: optional latitude to prioritize results
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: "51.4321"
+      requestBody:
+        description: list of structured geocoding inputs
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/GeocodingStructuredBatchInputType'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GeocodingOutputType'
+                x-content-type: application/json
+        "401":
+          description: Unauthorized
+          headers:
+            WWW_Authenticate:
+              style: simple
+              explode: false
+              schema:
+                type: string
+          content: {}
+        "405":
+          description: Invalid input
+          content: {}
+        "500":
+          description: Internal Server Error
+          content: {}
+      x-swagger-router-controller: Geocode
   /geocoder/reverse:
     get:
       tags:
@@ -256,6 +391,37 @@ paths:
       x-swagger-router-controller: ReverseGeocode
 components:
   schemas:
+    GeocodingStructuredBatchInputType:
+      type: object
+      properties:
+        country:
+          type: string
+          description: optional country name
+          example: Deutschland
+        state:
+          type: string
+          description: optional state name
+          example: Nordrhein-Westfalen
+        city:
+          type: string
+          description: optional city name
+          example: Essen
+        district:
+          type: string
+          description: optional district name
+          example: Holsterhausen
+        postcode:
+          type: string
+          description: optional postcode name
+          example: "45147"
+        street:
+          type: string
+          description: optional street name
+          example: Müllerstraße
+        housenumber:
+          type: string
+          description: optional housenumber name
+          example: 13 C
     GeocodingOutputType:
       type: object
       properties:

@@ -12,7 +12,6 @@ var oas3Tools = require('oas3-tools');
 var serverPort = process.env.PORT || 8090;
 
 var oas3Tools = require('oas3-tools');
-var serverPort = 8090;
 
 // swaggerRouter configuration
 var options = {
