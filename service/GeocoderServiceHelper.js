@@ -11,8 +11,15 @@ exports.performGeocoding_queryString = async function (q, lon, lat) {
     lat = Number(lat);
 
     // proxy request to photon and map result to output format
-    let photonResponse = await PhotonHelper.geocode_querystring(q, lon, lat, limit);
-    let geocoderOutput = PhotonHelper.mapToKomMonitorModel(photonResponse);
+
+    // due to some problems with keeping custom photon instance up-to-date from local nominatim instance
+    // we temporarily use nominatim instead of photon for query string search 
+    // let photonResponse = await PhotonHelper.geocode_querystring(q, lon, lat, limit);
+    // let geocoderOutput = PhotonHelper.mapToKomMonitorModel(photonResponse);
+
+    //
+    let nominatimResponse = await NominatimHelper.geocode_querystring(q, lon, lat, limit);
+    let geocoderOutput = NominatimHelper.mapToKomMonitorModel(nominatimResponse);
 
     return geocoderOutput;
 };
