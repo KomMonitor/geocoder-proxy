@@ -9,7 +9,7 @@ var bodyParser = require('body-parser');
 var cors = require('cors');
 
 var oas3Tools = require('oas3-tools');
-var serverPort = process.env.PORT || 8090;
+var serverPort = process.env.PORT || 8091;
 
 var oas3Tools = require('oas3-tools');
 
