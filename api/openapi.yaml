@@ -16,7 +16,7 @@ externalDocs:
   url: http://swagger.io
 servers:
 - url: https://geocoder.fbg-hsbo.de/
-- url: http://localhost:8090/
+- url: http://localhost:8091/
 tags:
 - name: geocode
   description: geocode locations or reverse geocode coordinates
@@ -567,11 +567,19 @@ components:
           type: string
           description: house number (including any suffix) if available
           example: 13c
+        geocoderank:
+          type: string
+          description: evaluation of geocoding result (unresolved = least accurate cause false street and/or city/postcode; low_accuracy = more accurate due to same street and same city/postcode but no housenumber; high_accuracy = most accurate due to same street and same city/postcode and same housenumber)
+          enum:
+            - "unresolved"
+            - "low_accuracy"
+            - "high_accuracy"
       example:
         country: Deutschland
         city: Essen
         housenumber: 13c
         street: Müllerstraße
+        geocoderank: "high_accuracy"
         district: Holsterhausen
         postcode: "45147"
         state: Nordrhein-Westfalen
