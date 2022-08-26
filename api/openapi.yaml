@@ -574,6 +574,9 @@ components:
             - "unresolved"
             - "low_accuracy"
             - "high_accuracy"
+        geocodedesc:
+          type: string
+          description: descriptive evaluation of geocoding result
       example:
         country: Deutschland
         city: Essen

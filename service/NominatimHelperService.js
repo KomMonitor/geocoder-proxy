@@ -5,6 +5,10 @@ let KommonitorGeocoderApi = require('../lib/kommonitorGeocoderApi');
 // axios is used to execute HTTP requests in a Promise-based manner
 const axios = require("axios");
 
+const GEOCODE_DESC_UNRESOLVED = "low accuracy - high risk of false positioning. feature does not match query parameters. false street and/or city/postcode";
+const GEOCODE_DESC_LOW_ACCURACY = "moderate accuracy - medium risk of false positioning. feature matches same street and city/postcode. but housenumber does not match";
+const GEOCODE_DESC_HIGH_ACCURACY = "high accuracy - low risk of false positioning. feature matches same street and city/postcode and same housenumber";
+
 exports.geocode_querystring = async function (q, lon, lat, limit) {
 
     // https://nominatim.org/release-docs/latest/api/Search/#examples
@@ -354,6 +358,7 @@ exports.mapFeatureToKomMonitorModel = function (inputFeatureProperties, querystr
         2 = matches same street and city/postcode and has requested housenumber --> best result
     */
    outputProperties.geocoderank = 0;
+   outputProperties.geocodedesc = GEOCODE_DESC_UNRESOLVED;
    if (querystring){
      querystring = replaceDiacritics(querystring.toLowerCase());
     // when comparing the street we must make sure that abbreviated street names are compared correctly
@@ -370,16 +375,19 @@ exports.mapFeatureToKomMonitorModel = function (inputFeatureProperties, querystr
     if (querystring.includes(street_abbreviationClean)){
         if (querystring.includes(outputProperties.postcode.toLowerCase()) || querystring.includes(outputProperties.city.toLowerCase())){
             outputProperties.geocoderank = 1;
+            outputProperties.geocodedesc = GEOCODE_DESC_LOW_ACCURACY;
         }
         if (outputProperties.housenumber){
             if (querystring.includes(outputProperties.housenumber.toLowerCase())){
                 if (outputProperties.geocoderank == 1){
                     outputProperties.geocoderank = 2;
+                    outputProperties.geocodedesc = GEOCODE_DESC_HIGH_ACCURACY;
                 }
                 else{
                     // obviously the response object has same street but query postcode and query city do not appear in response object.
                     // hence we cannot be sure that the point is located correctly 
                     outputProperties.geocoderank = 1;
+                    outputProperties.geocodedesc = GEOCODE_DESC_LOW_ACCURACY;
                 }
             }
         }
