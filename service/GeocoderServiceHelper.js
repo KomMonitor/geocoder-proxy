@@ -38,6 +38,12 @@ exports.performGeocoding_structuredQuery = async function (country,state,city,di
     if(postcode){
         queryString += postcode;
     }
+    if(street){
+        queryString += street;
+    }
+    if(housenumber){
+        queryString += housenumber;
+    }
     let geocoderOutput = NominatimHelper.mapToKomMonitorModel(nominatimResponse, queryString);
 
     return geocoderOutput;
