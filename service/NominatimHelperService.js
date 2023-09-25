@@ -379,7 +379,11 @@ exports.mapFeatureToKomMonitorModel = function (inputFeatureProperties, querystr
 
 
                 if (querystring.includes(street_abbreviationClean)) {
-                    if (querystring.includes(outputProperties.postcode.toLowerCase()) || querystring.includes(outputProperties.city.toLowerCase())) {
+
+                    let postcode = outputProperties.postcode ? outputProperties.postcode.toLowerCase() : undefined;
+                    let city = outputProperties.city ? outputProperties.city.toLowerCase() : undefined;
+
+                    if (querystring.includes(postcode) || querystring.includes(city)) {
                         outputProperties.geocoderank = 1;
                         outputProperties.geocodedesc = GEOCODE_DESC_LOW_ACCURACY;
                     }
