@@ -335,6 +335,10 @@ exports.mapFeatureToKomMonitorModel = function (inputFeatureProperties, querystr
         outputProperties.state = inputFeatureProperties.address["state"];
         outputProperties.district = inputFeatureProperties.address["suburb"];
         outputProperties.city = inputFeatureProperties.address["city"];
+
+        if (! outputProperties.city){
+            outputProperties.city = inputFeatureProperties.address["county"];
+        }
         outputProperties.street = inputFeatureProperties.address["road"];
         outputProperties.housenumber = inputFeatureProperties.address["house_number"];
         outputProperties.postcode = inputFeatureProperties.address["postcode"];
