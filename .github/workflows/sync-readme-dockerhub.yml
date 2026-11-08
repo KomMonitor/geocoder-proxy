@@ -1,40 +1,28 @@
 name: Sync README to Docker Hub
 
-# Controls when the action will run. 
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
-  # Allows you to run this workflow manually from the Actions tab
+    paths:
+      - README_DOCKERHUB.md
+      - .github/workflows/sync-readme-dockerhub.yml
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+permissions:
+  contents: read
+
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  sync-readme:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
+      - name: Check out repo
+        uses: actions/checkout@v7
 
-      - name: Check Out Repo 
-        uses: actions/checkout@v2
-
-      - uses: meeDamian/sync-readme@v1.0.6
+      - name: Update Docker Hub description
+        uses: peter-evans/dockerhub-description@v5
         with:
-          user: ${{ secrets.DOCKERHUB_DANO_USERNAME }}
-          pass: ${{ secrets.DOCKERHUB_DANO_SECRET }}
-          slug: kommonitor/geocoder-proxy
-          readme: ./README_DOCKERHUB.md
-          description: false
+          username: ${{ secrets.DOCKERHUB_DANO_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_DANO_SECRET }}
+          repository: kommonitor/geocoder-proxy
+          readme-filepath: ./README_DOCKERHUB.md
